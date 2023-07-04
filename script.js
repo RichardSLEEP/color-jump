@@ -2,74 +2,72 @@ class Game {
 
   constructor() {
     this.score = 0;
-    this.isRunning = 0; // game is not running
+    this.isRunning = 0; // 初始未运行
 
     this.calculateScale();
-
+    // 用于管理动画序列，所有子动画时间线保持平滑
     this.timeline = new TimelineMax({ smoothChildTiming: true });
-    this.time = 1.6; // initial speed
+    this.time = 1.6; // 初始移动速度
     this.colors = ["#FF4571", "#FFD145", "#8260F6"]; // the 3 colors used in the game
     this.colorsRGBA = ["rgba(255, 69, 113, 1)", "rgba(255, 69, 113, 1)", "rgba(255, 69, 113, 1)"];
-    this.color = this.colors[0]; // the intial color of the ball
-    this.prevColor = null; // used as a holder to prevent ball colors from repeating
+    this.color = this.colors[0]; // 球的初始颜色
+    this.prevColor = null; // 防止球颜色重复
   }
 
   /**
-   * The game screen is scalable. I took 1200x800px as the initial scale.
-   * In order to display the game an many screen sizes properly
-   * I have to compare the player's sreen size to the initial scale,
-   * then scale the game using CSS Transform to fit the screen properly
-   * The function is called in the controller and anywhere where I need
-   * to recalculate the scale on screen resize or device rotation
+   * 自适应
+   * 原始比例 1200x800px 
+   * 计算屏幕比例和旋转
    */
   calculateScale() {
     this.screen = $(window).width(); // screen width
     this.screenHeight = $(window).height();
+    // 根据较小的值来确定比例 如果按照大的来同比例放缩，会有元素展示不全
     this.scale = this.screen > this.screenHeight ? this.screenHeight / 800 : this.screen / 1200;
-    this.stickWidth = 180 * this.scale;
-    this.steps = this.screen / this.stickWidth; // how many steps (stick width + margin) it takes from one end to another
+    this.stickWidth = 180 * this.scale; //以180*比例 作为一个单位值
+    this.steps = this.screen / this.stickWidth; // 屏幕宽度需要多少180 (stick width + margin) 
   }
 
-  /**
-   * Creating as many sticks we need to fill the screen
-   * from start to end of the screen. The steps property is used for that
-   */
+/* 屏幕填满盒子 */
   generateSticks() {
-    let numberOfSticks = Math.ceil(this.steps);
+    let numberOfSticks = Math.ceil(this.steps); //向上取整
     for (let i = 0; i <= numberOfSticks; i++)
-    new Stick();
+      new Stick();
   }
 
   generateBall() {
+    // 小球动画序列  无限循环，开始为暂停
     this.balltween = new TimelineMax({ repeat: -1, paused: 1 });
+    // 添加小球
     $('.scene .ball-holder').append('<div class="ball red" id="ball"></div>');
-    this.bounce();
+    this.bounce(); 
   }
 
-  generateTweet() {
-    let top = $(window).height() / 2 - 150;
-    let left = $(window).width() / 2 - 300;
-    window.open("https://twitter.com/intent/tweet?url=https://codepen.io/gregh/full/yVLOyO&amp;text=I scored " + this.score + " points on Coloron! Can you beat my score?&amp;via=greghvns&amp;hashtags=coloron", "TweetWindow", "width=600px,height=300px,top=" + top + ",left=" + left);
-  }
+  // generateTweet() {
+  //   let top = $(window).height() / 2 - 150;
+  //   let left = $(window).width() / 2 - 300;
+  //   window.open("https://twitter.com/intent/tweet?url=https://codepen.io/gregh/full/yVLOyO&amp;text=I scored " + this.score + " points on Coloron! Can you beat my score?&amp;via=greghvns&amp;hashtags=coloron", "TweetWindow", "width=600px,height=300px,top=" + top + ",left=" + left);
+  // }
 
   /**
    * The greeting when the game begins
    */
   intro() {
-
+    // 停止和清除所有动画，并释放内存
     TweenMax.killAll();
 
     //TweenMax.to('.splash', 0.3, { opacity: 0, display: 'none', delay: 1 })
-
+    // 隐藏停止游戏，显示开始按钮
     $('.stop-game').css('display', 'none');
     $('.start-game').css('display', 'flex');
 
     let introTl = new TimelineMax();
     let ball = new TimelineMax({ repeat: -1, delay: 3 });
+    // 平滑出现
     introTl.
-    fromTo('.start-game .logo-holder', 0.9, { opacity: 0 }, { opacity: 1 }).
-    staggerFromTo('.start-game .logo span', 0.5, { opacity: 0 }, { opacity: 1 }, 0.08).
-    staggerFromTo('.start-game .bar', 1.6, { y: '+100%' }, { y: '0%', ease: Elastic.easeOut.config(1, 0.3) }, 0.08).
+    fromTo('.start-game .logo-holder', 0.9, { opacity: 0 }, { opacity: 1 }).  //不透明度从0-1，持续0.9s
+    staggerFromTo('.start-game .logo span', 0.6, { opacity: 0 }, { opacity: 1 }, 0.2). //间隔0.15
+    staggerFromTo('.start-game .bar', 1.6, { y: '+100%' }, { y: '0%', ease: Elastic.easeOut.config(1, 0.3) }, 0.08). //bar 下方移到上方 弹性缓动
     staggerFromTo('.start-game .ball-demo', 1, { scale: 0 }, { scale: 1, ease: Elastic.easeOut.config(1, 0.3) }, 0.8, 2);
 
 
@@ -110,21 +108,21 @@ class Game {
    * @return {string} grade
    */
   showGrade(score) {
-    if (score > 30) return "Chuck Norris?";else
-    if (score > 25) return "You're da man";else
-    if (score > 20) return "Awesome";else
-    if (score > 15) return "Great!";else
-    if (score > 13) return "Nice!";else
-    if (score > 10) return "Good Job!";else
-    if (score > 5) return "Really?";else
-    return "Poor...";
+    if (score > 30) return "受我一拜！";else
+    if (score > 25) return "太酷啦";else
+    if (score > 20) return "好棒";else
+    if (score > 15) return "漂亮!";else
+    if (score > 13) return "厉害!";else
+    if (score > 10) return "差一点!";else
+    if (score > 5) return "真的假的?";else
+    return "没睡醒？";
   }
 
   start() {
 
     this.stop(); // stop the game
 
-    $('.start-game, .stop-game').css('display', 'none'); // hide all the popups
+    $('.start-game, .stop-game').css('display', 'none'); 
     $('.nominee').hide();
 
     new Game();
@@ -143,10 +141,11 @@ class Game {
     if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(window.navigator.userAgent)) {
       Animation.sceneAnimation();
     }
+    // 小球和场景元素移动到起始位置
     this.moveToStart();
     this.moveScene();
 
-    // reset timescale to normal as the game speeds up
+    // 时间加快 开始后重置
     this.timeline.timeScale(1);
     this.balltween.timeScale(1);
   }
@@ -156,6 +155,7 @@ class Game {
     this.isRunning = 0;
 
     $('.start-game, .stop-game').css('display', 'none');
+    // 清空上一次
     $('#sticks, .scene .ball-holder, #score').html('');
     TweenMax.killAll();
 
@@ -176,16 +176,13 @@ class Game {
     css('height', height / this.scale).
     css('width', width / this.scale).
     css('transformOrigin', 'left top');
+    // 位于浏览器左上角
 
     $('#sticks').width(this.screen / this.scale + 3 * this.stickWidth / this.scale);
 
   }
 
-  /**
-   * Calls the above function
-   * If the game is running it stops and shows the score
-   * If the game has stops it takes player to the main menu
-   */
+/* 缩放界面时停止 */
   scaleScreenAndRun() {
 
     this.scaleScreen();
@@ -207,10 +204,12 @@ class Game {
 
     let tip = new TimelineMax({ delay: 2 });
 
+    // 提示先放大后缩小
     tip.
     fromTo('.learn-to-play', 1, { scale: 0 }, { scale: 1, opacity: 1, ease: Elastic.easeOut.config(1.25, 0.5) }).
     to('.learn-to-play', 1, { scale: 0, opacity: 0, ease: Elastic.easeOut.config(1.25, 0.5) }, 3);
 
+    // 球从0->1
     TweenMax.fromTo('#ball', this.time,
     {
       scale: 0 },
@@ -222,15 +221,13 @@ class Game {
         this.balltween.play();
       } });
 
-
+    // 棍子移动匀速
     this.timeline.add(
     TweenMax.fromTo('#sticks', this.time * this.steps, { x: this.screen / this.scale }, { x: 0, ease: Power0.easeNone }));
 
   }
 
-  /**
-   * The animation that moves sticks
-   */
+/* 棍子移动动画 */
   moveScene() {
 
     this.timeline.add(
@@ -244,28 +241,25 @@ class Game {
    * this gives the sticks an infinite movement
    */
   rearrange() {
-
+    // 调整速度
     let scale = this.speedUp();
 
     this.timeline.timeScale(scale);
     this.balltween.timeScale(scale);
 
+    // 保持棍子数量始终不变
     $('#sticks .stick').first().remove();
     new Stick();
 
   }
 
-  /**
-   * The game speeds up based on score
-   * The GSAP timeScale() function is called on the timeline to speed up the game
-   * This calculates how much shall the game speed up
-   */
+
   speedUp() {
     if (this.score > 30) {
-      return 1.8;
+      return 1.7;
     }
     if (this.score > 20) {
-      return 1.7;
+      return 1.6;
     }
     if (this.score > 15) {
       return 1.5;
@@ -285,11 +279,7 @@ class Game {
     return 1;
   }
 
-  /**
-   * Ball bouncing animation
-   * It checks if the ball and stick colors match
-   * And changes the ball color
-   */
+//  匹配棍子 改变球
   bounce() {
 
     this.balltween.
@@ -303,6 +293,7 @@ class Game {
           this.color = new Color().getRandomColor();
         }
         this.prevColor = this.color;
+        // 改变球的颜色
         TweenMax.to('#ball', 0.5, { backgroundColor: this.color });
         $('#ball').removeClass('red').
         removeClass('yellow').
@@ -322,7 +313,6 @@ class Game {
       if ($(this).offset().left < ballPos && $(this).offset().left > ballPos - stickWidth) {
 
         if (Color.getColorFromClass($(this)) == Color.getColorFromClass('#ball')) {
-          // if matches increase the score
           score++;
           $('#score').text(score);
           TweenMax.fromTo('#score', 0.5, { scale: 1.5 }, { scale: 1, ease: Elastic.easeOut.config(1.5, 0.5) });
@@ -340,7 +330,7 @@ class Game {
   }}
 
 
-
+// 向屏幕填充盒子
 class Stick {
 
   constructor() {
@@ -430,8 +420,6 @@ class Color {
   }
 
   /**
-   * Since the ball and sticks have several classes
-   * This method searches for the color class
    * @param el [DOM element]
    * @return {string} class name
    */
@@ -554,9 +542,9 @@ $(document).ready(function () {
   //game.start();
   //game.bounce();
 
-  if ($(window).height() < 480) {
-    $('.play-full-page').css('display', 'block');
-  }
+  // if ($(window).height() < 480) {
+  //   $('.play-full-page').css('display', 'block');
+  // }
 });
 
 $(document).on('click', '.stick', function () {

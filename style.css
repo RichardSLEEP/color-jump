@@ -722,8 +722,8 @@ a:focus, a:active {
   text-align: center;
 }
 .start-game .logo-holder .logo span {
-  margin-left: -8px;
-  margin-right: -8px;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 .start-game .logo-holder .play-button {
   display: inline-block;
@@ -777,6 +777,7 @@ a:focus, a:active {
   width: 60px;
   border-radius: 7px;
   margin-top: auto;
+  margin-right: 30px;
   transition: background-color 0.4s ease;
 }
 .start-game .how-to-play .bar.bar-1 {
