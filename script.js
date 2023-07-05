@@ -43,11 +43,39 @@ class Game {
     this.bounce(); 
   }
 
-  // generateTweet() {
-  //   let top = $(window).height() / 2 - 150;
-  //   let left = $(window).width() / 2 - 300;
-  //   window.open("https://twitter.com/intent/tweet?url=https://codepen.io/gregh/full/yVLOyO&amp;text=I scored " + this.score + " points on Coloron! Can you beat my score?&amp;via=greghvns&amp;hashtags=coloron", "TweetWindow", "width=600px,height=300px,top=" + top + ",left=" + left);
-  // }
+  copyScore() {
+      let score = this.score;
+
+      // 创建一个临时输入框
+      const input = document.createElement('input');
+      input.setAttribute('id', 'copyInput');
+      input.setAttribute('value', 'text');
+      input.setAttribute('style', 'position: absolute; left: -9999px;');
+      // $('.result').append(input);
+      
+      document.body.appendChild(input);
+
+      // $('#copyInput').text(score + '分!敢来 https://richardsleep.github.io/color-jump/index.html# 和我pk吗?');
+      input.setAttribute('value', '我拿了' + score + '分!敢来 https://richardsleep.github.io/color-jump/index.html# 和我pk吗?');
+
+      // 选中临时输入框中的s所有文本
+      input.select();
+      input.setSelectionRange(0, 99999);
+
+      // 复制文本到剪贴板
+      document.execCommand('copy');
+
+      alert('已复制，快和朋友PK一下！');
+
+      // 移除临时输入框
+      // $('.result').remove(input);
+      document.body.removeChild(input);
+    
+    // let top = $(window).height() / 2 - 150;
+    // let left = $(window).width() / 2 - 300;
+    // window.open("https://twitter.com/intent/tweet?url=https://codepen.io/gregh/full/yVLOyO&amp;text=I scored " + this.score + " points on Coloron! Can you beat my score?&amp;via=greghvns&amp;hashtags=coloron", "TweetWindow", "width=600px,height=300px,top=" + top + ",left=" + left);
+
+  }
 
   /**
    * The greeting when the game begins

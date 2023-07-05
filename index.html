@@ -70,18 +70,19 @@
 
                 <div class="score-container">
 
-                    <h1>跳一跳</h1>
+                    <h1>跳  一  跳</h1>
 
                     <div class="final-score"></div>
                     <div class="result"></div>
 
-                    <h4>分享比拼一下！</h4>
-
-                    <!-- <p>
-                        <a class="tweet" href="#" onclick="game.generateTweet()">
-                            <i class="fa fa-twitter" aria-hidden="true"></i> Tweet
+                    <!-- <h4>比拼一下！</h4> -->
+                    <input type="text" id="copyInput" style="position: absolute; left: -9999px;">
+                    <p>
+                        <a class="tweet" href="#" onclick="game.copyScore()">
+                            <!-- <i class="fa fa-twitter" aria-hidden="true"></i> Tweet -->
+                            <i class="fa fa-share" aria-hidden="true"></i>
                         </a>
-                    </p> -->
+                    </p>
 
                     <div>
                         <a class="play-again" href="#" onclick="game.start()">再来！</a>
