@@ -78,7 +78,7 @@ class Game {
   }
 
   /**
-   * The greeting when the game begins
+   * 开始界面
    */
   intro() {
     // 停止和清除所有动画，并释放内存
@@ -112,7 +112,7 @@ class Game {
   }
 
   /**
-  * Display score
+  * 分数
    */
   showResult() {
     let score = this.score;
@@ -131,9 +131,7 @@ class Game {
   }
 
   /**
-   * Takes players score and generates the cheering copy
-   * @param  {int} score
-   * @return {string} grade
+   * 等级夸赞
    */
   showGrade(score) {
     if (score > 30) return "受我一拜！";else
@@ -145,7 +143,7 @@ class Game {
     if (score > 5) return "真的假的?";else
     return "没睡醒？";
   }
-
+/* 开始 */
   start() {
 
     this.stop(); // stop the game
@@ -177,7 +175,7 @@ class Game {
     this.timeline.timeScale(1);
     this.balltween.timeScale(1);
   }
-
+/* 结束 */
   stop() {
 
     this.isRunning = 0;
@@ -189,7 +187,7 @@ class Game {
 
     this.showResult();
   }
-
+/* 计算屏幕 */
   scaleScreen() {
 
     TweenMax.killAll(); // prevent multiple calls on resize
@@ -224,9 +222,7 @@ class Game {
   }
 
   /**
-   * This is the initial animation
-   * where the sticks come to the starting position
-   * and the ball appears and falls down
+   * 小球开始游戏后
    */
   moveToStart() {
 
@@ -257,19 +253,15 @@ class Game {
 
 /* 棍子移动动画 */
   moveScene() {
-
+    // 调整速度
     this.timeline.add(
     TweenMax.to('#sticks', this.time, { x: '-=180px', ease: Power0.easeNone, repeat: -1, onRepeat: () => {this.rearrange();} }));
-
-
   }
 
   /**
-   * removes the first stick and adds one the the end
-   * this gives the sticks an infinite movement
+   * 调整速度 放缩
    */
   rearrange() {
-    // 调整速度
     let scale = this.speedUp();
 
     this.timeline.timeScale(scale);
@@ -281,7 +273,7 @@ class Game {
 
   }
 
-
+/* 速度 */
   speedUp() {
     if (this.score > 30) {
       return 1.7;
@@ -307,9 +299,8 @@ class Game {
     return 1;
   }
 
-//  匹配棍子 改变球
+//  弹跳  匹配棍子 改变球
   bounce() {
-
     this.balltween.
     to('#ball', this.time / 2, { y: '+=250px', scaleY: 0.7, transformOrigin: "bottom", ease: Power2.easeIn,
       onComplete: () => {
@@ -331,8 +322,8 @@ class Game {
 
   }
 
+/* 检查匹配颜色 */
   checkColor() {
-
     let ballPos = $('#ball').offset().left + $('#ball').width() / 2;
     let stickWidth = $('.stick').width();
     let score = this.score;
@@ -345,10 +336,8 @@ class Game {
           $('#score').text(score);
           TweenMax.fromTo('#score', 0.5, { scale: 1.5 }, { scale: 1, ease: Elastic.easeOut.config(1.5, 0.5) });
         } else {
-
-          // you loose
+          // 游戏结束
           game.stop();
-
         }
 
       }
@@ -358,9 +347,8 @@ class Game {
   }}
 
 
-// 向屏幕填充盒子
+/* 向屏幕填充盒子 */ 
 class Stick {
-
   constructor() {
     this.stick = this.addStick();
   }
@@ -372,20 +360,21 @@ class Stick {
 
 
 
-class Color {
 
+class Color {
   constructor() {
     this.colors = ["#FF4571", "#FFD145", "#8260F6"];
     this.effects = ["bubble", "triangle", "block"];
     this.prevEffect = null;
   }
-
+/* 获取随机颜色 */
   getRandomColor() {
     let colorIndex = Math.random() * 3;
     let color = this.colors[Math.floor(colorIndex)];
     return color;
   }
 
+/* 转换颜色名字 */
   colorcodeToName(color) {
     let colors = ["#FF4571", "#FFD145", "#8260F6"];
     let names = ["red", "yellow", "purple"];
@@ -395,8 +384,7 @@ class Color {
   }
 
   /**
-   * Changes the color of an element
-   * As we as adds verbal name of the color
+   * 改变元素颜色
    */
   changeColor(el) {
     let index = el.data("index");
@@ -420,10 +408,12 @@ class Color {
     el.removeClass('inactive');
   }
 
+  // 保证随机
   getRandomEffect() {
     let effectIndex = null;
-
+    // 与3相乘 向下取整 0-2
     effectIndex = Math.floor(Math.random() * 3);
+    // 防止与前一个相同
     while (effectIndex == this.prevEffect) {
       effectIndex = Math.floor(Math.random() * 3);
     }
@@ -433,7 +423,7 @@ class Color {
   }
 
   /**
-   * Adds the effect specific particles to the stick
+   * 随机应用至盒子内的形状
    */
   setEffect(el) {
     let effect = this.getRandomEffect();
@@ -448,10 +438,10 @@ class Color {
   }
 
   /**
-   * @param el [DOM element]
-   * @return {string} class name
+   * 获取Dom颜色
    */
   static getColorFromClass(el) {
+    // 按空格进行拆分 返回数组
     let classes = $(el).attr('class').split(/\s+/);
     for (var i = 0, len = classes.length; i < len; i++) {
       if (classes[i] == 'red' || classes[i] == 'yellow' || classes[i] == 'purple') {
@@ -460,12 +450,9 @@ class Color {
     }
   }}
 
-
+/* 光晕动画 */
 class Animation {
-
-  /**
-   * Creates and positions the small glow elements on the screen
-   */
+  /* 通过屏幕比例调整光晕大小 */
   static generateSmallGlows(number) {
     let h = $(window).height();
     let w = $(window).width();
@@ -474,6 +461,7 @@ class Animation {
     h = h / scale;
     w = w / scale;
 
+    // 生成随机数来设置小光晕元素的位置和大小
     for (let i = 0; i < number; i++) {
       let left = Math.floor(Math.random() * w);
       let top = Math.floor(Math.random() * (h / 2));
@@ -484,12 +472,7 @@ class Animation {
     }
   }
 
-  /**
-   * Creates the animations for sticks
-   * The effects is chosen by random
-   * And one of the three functions is
-   * Called accordingly
-   */
+  /* 盒子内部动画   */
   playBubble(el) {
     let bubble = new TimelineMax();
     bubble.staggerFromTo(el.find('.bubble'), 0.3, { scale: 0.1 }, { scale: 1 }, 0.03);
@@ -530,17 +513,19 @@ class Animation {
     0.1);
   }
 
+  /* 背景动画 */
   static sceneAnimation() {
 
-    const speed = 15; // uses it's local speed
+    // 常量速度
+    const speed = 15; 
 
-    // animates the small glows in a circular motion
+    // 光晕循环动画
     $('.small-glow').each(function () {
       let speedDelta = Math.floor(Math.random() * 8);
       let radius = Math.floor(Math.random() * 20) + 20;
       TweenMax.to($(this), speed + speedDelta, { rotation: 360, transformOrigin: "-" + radius + "px -" + radius + "px", repeat: -1, ease: Power0.easeNone });
     });
-
+    // 持续时间 speed * 1.7 / 42
     var wavet = TweenMax.to('.top_wave', speed * 1.7 / 42, { backgroundPositionX: '-=54px', repeat: -1, ease: Power0.easeNone });
     var wave1 = TweenMax.to('.wave1', speed * 1.9 / 42, { backgroundPositionX: '-=54px', repeat: -1, ease: Power0.easeNone });
     var wave2 = TweenMax.to('.wave2', speed * 2 / 42, { backgroundPositionX: '-=54px', repeat: -1, ease: Power0.easeNone });
@@ -559,8 +544,9 @@ class Animation {
 var game = new Game();
 var animation = new Animation();
 var color = new Color();
-var userAgent = window.navigator.userAgent;
+var userAgent = window.navigator.userAgent; //获取浏览器信息
 
+// 20个光晕
 Animation.generateSmallGlows(20);
 
 $(document).ready(function () {
@@ -593,12 +579,14 @@ $(document).on('click', '.section-2 .bar', function () {
   color.changeColor($(this));
 });
 
+// 适配
 $(window).resize(function () {
   if (!userAgent.match(/iPad/i) && !userAgent.match(/iPhone/i)) {
     game.scaleScreenAndRun();
   }
 });
 
+// 旋转屏幕重新适配
 $(window).on("orientationchange", function () {
   game.scaleScreenAndRun();
 });
